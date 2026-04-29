@@ -1,12 +1,12 @@
-name: CI - udagram-frontend
+name: CI - udagram-reverseproxy
 
 on:
   push:
     paths:
-      - "udagram-frontend/**"
+      - "udagram-reverseproxy/**"
   pull_request:
     paths:
-      - "udagram-frontend/**"
+      - "udagram-reverseproxy/**"
 
 jobs:
   build:
@@ -29,8 +29,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-frontend:latest udagram-frontend
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-reverseproxy:latest udagram-reverseproxy
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-reverseproxy:latest
