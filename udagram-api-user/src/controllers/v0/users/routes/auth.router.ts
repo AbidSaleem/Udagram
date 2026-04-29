@@ -8,10 +8,8 @@ import * as jwt from 'jsonwebtoken';
 import {NextFunction} from 'connect';
 
 import * as EmailValidator from 'email-validator';
-import {config} from 'bluebird';
 
 const router: Router = Router();
-
 
 async function generatePassword(plainTextPassword: string): Promise<string> {
   const saltRounds = 10;
@@ -28,75 +26,97 @@ function generateJWT(user: User): string {
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
+  console.log(`[AUTH] Checking auth for request: ${req.method} ${req.url}`);
+
   if (!req.headers || !req.headers.authorization) {
+    console.log(`[AUTH] Missing authorization header`);
     return res.status(401).send({message: 'No authorization headers.'});
   }
 
   const tokenBearer = req.headers.authorization.split(' ');
   if (tokenBearer.length != 2) {
+    console.log(`[AUTH] Malformed token`);
     return res.status(401).send({message: 'Malformed token.'});
   }
 
   const token = tokenBearer[1];
-  return jwt.verify(token, c.config.jwt.secret, (err, decoded) => {
+  return jwt.verify(token, c.config.jwt.secret, (err) => {
     if (err) {
+      console.log(`[AUTH] Token verification failed`);
       return res.status(500).send({auth: false, message: 'Failed to authenticate.'});
     }
+
+    console.log(`[AUTH] Token verified successfully`);
     return next();
   });
 }
 
 router.get('/verification',
-    requireAuth,
-    async (req: Request, res: Response) => {
-      return res.status(200).send({auth: true, message: 'Authenticated.'});
-    });
+  requireAuth,
+  async (req: Request, res: Response) => {
+    console.log(`[AUTH] Verification endpoint accessed`);
+    return res.status(200).send({auth: true, message: 'Authenticated.'});
+  }
+);
 
 router.post('/login', async (req: Request, res: Response) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  console.log(`[AUTH] Login attempt for email: ${email}`);
+
   if (!email || !EmailValidator.validate(email)) {
+    console.log(`[AUTH] Login failed — invalid email: ${email}`);
     return res.status(400).send({auth: false, message: 'Email is required or malformed.'});
   }
 
   if (!password) {
+    console.log(`[AUTH] Login failed — missing password for: ${email}`);
     return res.status(400).send({auth: false, message: 'Password is required.'});
   }
 
   const user = await User.findByPk(email);
   if (!user) {
+    console.log(`[AUTH] Login failed — user not found: ${email}`);
     return res.status(401).send({auth: false, message: 'User was not found..'});
   }
 
   const authValid = await comparePasswords(password, user.passwordHash);
 
   if (!authValid) {
+    console.log(`[AUTH] Login failed — invalid password for: ${email}`);
     return res.status(401).send({auth: false, message: 'Password was invalid.'});
   }
 
-  const jwt = generateJWT(user);
+  console.log(`[AUTH] Login successful for: ${email}`);
 
-  res.status(200).send({auth: true, token: jwt, user: user.short()});
+  const jwtToken = generateJWT(user);
+  res.status(200).send({auth: true, token: jwtToken, user: user.short()});
 });
-
 
 router.post('/', async (req: Request, res: Response) => {
   const email = req.body.email;
   const plainTextPassword = req.body.password;
 
+  console.log(`[AUTH] Registration attempt for email: ${email}`);
+
   if (!email || !EmailValidator.validate(email)) {
+    console.log(`[AUTH] Registration failed — invalid email: ${email}`);
     return res.status(400).send({auth: false, message: 'Email is missing or malformed.'});
   }
 
   if (!plainTextPassword) {
+    console.log(`[AUTH] Registration failed — missing password for: ${email}`);
     return res.status(400).send({auth: false, message: 'Password is required.'});
   }
 
   const user = await User.findByPk(email);
   if (user) {
+    console.log(`[AUTH] Registration failed — user already exists: ${email}`);
     return res.status(422).send({auth: false, message: 'User already exists.'});
   }
+
+  console.log(`[AUTH] Registration successful for: ${email}`);
 
   const generatedHash = await generatePassword(plainTextPassword);
 
@@ -107,12 +127,12 @@ router.post('/', async (req: Request, res: Response) => {
 
   const savedUser = await newUser.save();
 
-
-  const jwt = generateJWT(savedUser);
-  res.status(201).send({token: jwt, user: savedUser.short()});
+  const jwtToken = generateJWT(savedUser);
+  res.status(201).send({token: jwtToken, user: savedUser.short()});
 });
 
 router.get('/', async (req: Request, res: Response) => {
+  console.log(`[AUTH] Root auth endpoint accessed`);
   res.send('auth');
 });
 
