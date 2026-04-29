@@ -1,12 +1,12 @@
-name: CI - udagram-api-reverseproxy
+name: CI - udagram-api-frontend
 
 on:
   push:
     paths:
-      - "udagram-api-reverseproxy/**"
+      - "udagram-api-frontend/**"
   pull_request:
     paths:
-      - "udagram-api-reverseproxy/**"
+      - "udagram-api-frontend/**"
 
 jobs:
   build:
@@ -22,11 +22,11 @@ jobs:
           node-version: 16
 
       - name: Install dependencies
-        working-directory: udagram-api-reverseproxy
+        working-directory: udagram-api-frontend
         run: npm install
 
       - name: Run tests
-        working-directory: udagram-api-reverseproxy
+        working-directory: udagram-api-frontend
         run: npm test --if-present
 
       - name: Login to Docker Hub
@@ -37,8 +37,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-api-reverseproxy:latest udagram-api-reverseproxy
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-api-frontend:latest udagram-api-frontend
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-api-reverseproxy:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-api-frontend:latest
