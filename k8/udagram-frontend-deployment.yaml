@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: udagram-frontend
-          image: abidsaleem2/udagram-frontend:1
+          image: abidsaleem2/udagram-frontend:latest
           ports:
             - containerPort: 8080
           env:
