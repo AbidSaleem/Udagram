@@ -41,3 +41,6 @@ venv/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 .angular/cache/
+aws-secret.yaml
+env-secret.yaml
+credentials

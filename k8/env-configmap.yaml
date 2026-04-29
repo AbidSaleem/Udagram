@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-config
+data:
+  POSTGRES_HOST: "postgres.cfcg8e6wos3y.eu-north-1.rds.amazonaws.com"
+  POSTGRES_DB: "postgres"
+  AWS_REGION: "eu-north-1"
+  AWS_PROFILE: "default"
+  AWS_BUCKET: "udagram-abid-project"
+  AWS_MEDIA_BUCKET: "udagram-abid-project"
+  JWT_SECRET: "hello"
+  PORT: "8080"
