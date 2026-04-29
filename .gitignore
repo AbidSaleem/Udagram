@@ -41,6 +41,7 @@ venv/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 .angular/cache/
+#K8 Files
 aws-secret.yaml
 env-secret.yaml
 credentials
