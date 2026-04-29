@@ -33,8 +33,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-api-feed:latest udagram-api-feed
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-api-feed:${{ github.run_number }} udagram-api-feed
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-api-feed:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-api-feed:${{ github.run_number }}

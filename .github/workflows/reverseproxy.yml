@@ -29,8 +29,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-reverseproxy:latest udagram-reverseproxy
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/udagram-reverseproxy:${{ github.run_number }} udagram-reverseproxy
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-reverseproxy:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/udagram-reverseproxy:${{ github.run_number }}
